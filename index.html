@@ -1,12 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>bruh</title>
+    <title>bruh</title>
 </head>
 <body>
-	<canvas id="animation"></canvas>
-	<button id="button">Test</button>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.10.0/matter.min.js"></script>
-	<script src="pi.js"></script>
+    <canvas id="stage" width="700" height="350" style="background-color: rgb(34, 34, 34);"></canvas>
+    <button id="button">Test</button>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.10.0/matter.min.js"></script> -->
+<!--     <script src="matter_ccd.js"></script>
+    <script src="pi_matter.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/planck-js@0.3.5/lib/index.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/planck-js@0.2/dist/planck-with-testbed.js"></script>
+    <!-- <script scr="pi_planck.js"></script> -->
+    <script type="text/javascript">
+        planck.testbed(function(testbed) {
+            var pl = planck, Vec2 = pl.Vec2;
+            var world = pl.World({gravity: Vec2(0, -9.82)});
+          
+            var ground = world.createBody({
+                type: 'static',
+                position: Vec2(0, 0),
+            });
+            ground.createFixture({
+                shape: pl.Edge(Vec2(-40.0, 0.0),Vec2(40.0, 0.0))
+            });
+
+            var wall = world.createBody({
+                type: 'static',
+                position: Vec2(-40, 0),
+                userData: 'wall'
+            });
+            ground.createFixture({
+                shape: pl.Edge(Vec2(-40.0, 0.0),Vec2(-40.0, 20.0))
+            });
+
+
+            var smallRect = world.createDynamicBody(Vec2(-10.0, 4.0));
+            smallRect.createFixture(pl.Box(4, 4), {
+                density:10, friction:0, restitution:1, userData: 'small'
+            });
+
+            var bigRect = world.createDynamicBody(Vec2(10.0, 4.0));
+            bigRect.createFixture(pl.Box(4, 4), {
+                density:1000, friction:0, restitution:1, userData: 'big'
+            });
+
+            var numCollisions = 0;
+
+            world.on('post-solve', function(contact) {
+                var fA = contact.getFixtureA();
+                var bB = contact.getFixtureB().getBody();
+                // console.log('A ' + fA.getUserData());
+                // console.log('B ' + fB.getUserData());
+                
+
+                if (fA.getUserData()  === 'small' || bB.getPosition().x <= -40.0+4.0) {
+                    numCollisions++;
+                    button.innerHTML = numCollisions;
+                }
+            });
+
+            var button = document.getElementById('button');
+            button.addEventListener('click', function(event) {
+                bigRect.setLinearVelocity(Vec2(-10.0, 0.0));
+            });
+
+            return world;
+        });
+    </script>
 </body>
 </html>
