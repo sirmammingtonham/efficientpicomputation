@@ -6,13 +6,20 @@
 <body>
     <canvas id="stage" width="700" height="350" style="background-color: rgb(34, 34, 34);"></canvas>
     <button id="button">Test</button>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.10.0/matter.min.js"></script> -->
-<!--     <script src="matter_ccd.js"></script>
-    <script src="pi_matter.js"></script> -->
+
+    <canvas id="animation" width="700" height="350"></canvas>
+
     <!-- <script src="https://cdn.jsdelivr.net/npm/planck-js@0.3.5/lib/index.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/planck-js@0.2/dist/planck-with-testbed.js"></script>
-    <!-- <script scr="pi_planck.js"></script> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.10.0/matter.min.js"></script>
+    <script src="pi.js"></script>
+
     <script type="text/javascript">
+        var digits = prompt("Please enter the number of digits to calculate. (note that this program breaks down after 2 digits because the physics engine can't handle the velocity of the inner mass... great, i know lol)", 2);
+
+        var mass = parseInt(digits);
+
         planck.testbed(function(testbed) {
             var pl = planck, Vec2 = pl.Vec2;
             var world = pl.World({gravity: Vec2(0, -9.82)});
@@ -37,15 +44,21 @@
 
             var smallRect = world.createDynamicBody(Vec2(-10.0, 4.0));
             smallRect.createFixture(pl.Box(4, 4), {
-                density:10, friction:0, restitution:1, userData: 'small'
+                density:1, friction:0, restitution:1, userData: 'small'
             });
 
             var bigRect = world.createDynamicBody(Vec2(10.0, 4.0));
             bigRect.createFixture(pl.Box(4, 4), {
-                density:1000, friction:0, restitution:1, userData: 'big'
+                density:Math.pow(10, mass), friction:0, restitution:1, userData: 'big'
             });
 
             var numCollisions = 0;
+
+            Number.prototype.pad = function(size) {
+                var s = String(this);
+                while (s.length < (size || 2)) {s = '0' + s;}
+                return s;
+            }
 
             world.on('post-solve', function(contact) {
                 var fA = contact.getFixtureA();
@@ -56,7 +69,7 @@
 
                 if (fA.getUserData()  === 'small' || bB.getPosition().x <= -40.0+4.0) {
                     numCollisions++;
-                    button.innerHTML = numCollisions;
+                    button.innerHTML = numCollisions.pad(4);
                 }
             });
 
@@ -67,6 +80,8 @@
 
             return world;
         });
+
+        piMatter(mass);
     </script>
 </body>
 </html>
