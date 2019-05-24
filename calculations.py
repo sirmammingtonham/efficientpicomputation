@@ -1,13 +1,15 @@
-m1 = 1      
-m2 = 100000000
+m1 = 1
 
-# Mass of object initially at rest : m1
-# Mass of object moving initially : m2
+digits = int(input("How many digits of pi would you like to compute?"))
 
-initvector = [0,1]
-# [Velocity of m1, Velocity of m2)
+m2 = 10**digits
+# Mass of object at rest: m1
+# Mass of moving object: m2
 
-currentvector = initvector[:]
+initVector = [0,1]
+# [Velocity of m1, Velocity of m2]
+
+currentVector = initVector
 
 def mulA(vec):
     msum = (m1 + m2)
@@ -22,37 +24,38 @@ def mulA(vec):
 
     return [v1, v2]
 
+# When the lighter mass hits the wall, 
+# reverse its velocity but maintain velocity of larger mass
 
 def mulW(vec):
     v1 = (-1)*vec[0]
     v2 = vec[1]
     return [v1, v2]
 
-def checkspeeds(speed1, speed2):
-    ret = True
-    if (speed1 <= 0 and speed2 <=0):
-        if(abs(speed2) >= abs(speed1)):
-            ret = False
+# Checks if the speed of the inner/smaller mass is 
+# faster than the outer/larger one
+def checkspeeds(v1, v2):
+    if (v1 <= 0 and v2 <=0):
+        if(abs(v1) >= abs(v2)):
+            return False
 
-    return ret
+    return True
 
 collisioncount = 0
 
 mtype = 'A'
 
-while(checkspeeds(currentvector[0], currentvector[1])):
-    print(currentvector[0], '\t', currentvector[1])
+while(checkspeeds(currentVector[0], currentVector[1])):
     if (mtype == 'A'):
-        nvec = mulA(currentvector)
-        currentvector = nvec[:]
-        collisioncount = collisioncount + 1
+        newVec = mulA(currentVector)
+        currentVector = newVec
+        collisioncount += 1 #increment counter on collision
         mtype = 'W'
     elif (mtype == 'W'):
-        nvec = mulW(currentvector)
-        currentvector = nvec[:]
-        collisioncount = collisioncount + 1
+        newVec = mulW(currentVector)
+        currentVector = newVec
+        collisioncount += 1 #increment counter on collision
         mtype = 'A'
 
-print("Mass at rest initally : %d" % m1)
-print("Mass at moving initally : %d" % m2)
-print("Total number of collisions of the masses : %f" % collisioncount)
+print(f"Mass at moving initally: " )
+print(f"Total number of collisions of the masses: {collisioncount}")
