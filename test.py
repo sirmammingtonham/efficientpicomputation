@@ -1,7 +1,7 @@
 m1 = 1      
-digits = int(input("How many digits of pi would you like to compute?"))
+# digits = int(input("How many digits of pi would you like to compute?"))
 
-m2 = 10**digits
+m2 = 10**3
 print(m2)
 
 # Mass of object initially at rest : m1
@@ -25,6 +25,15 @@ def mulA(vec):
 
     return [v1, v2]
 
+def elastic(mA,mB,vA1,vB1):
+  #this function calculates the final velocities after 
+  #an elastic collision
+  vC1=vA1-vB1
+  vD2=2*vC1/(mB/mA+1)
+  vB2=vD2+vB1
+  vC2=vC1-mB*vD2/mA
+  vA2=vC2+vB1
+  return(vA2,vB2)
 
 def mulW(vec):
     v1 = (-1)*vec[0]
@@ -46,7 +55,7 @@ mtype = 'A'
 while(checkspeeds(currentvector[0], currentvector[1])):
     
     if (mtype == 'A'):
-        nvec = mulA(currentvector)
+        nvec = elastic(m1, m2, currentvector[0], currentvector[1])
         currentvector = nvec[:]
         collisioncount = collisioncount + 1
         mtype = 'W'
